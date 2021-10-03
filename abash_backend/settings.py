@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-8do79mbkzd+qmqcry2d6ucesq4b=^*pkej(p+j3b2(66nyju!h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','abash133.herokuapp.com']
 
 
 # Application definition
@@ -62,6 +62,7 @@ MIDDLEWARE = [
 INTERNAL_IPS = [
     # ...
     '127.0.0.1',
+    'abash133.herokuapp.com'
     # ...
 ]
 
