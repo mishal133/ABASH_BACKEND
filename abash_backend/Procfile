@@ -1,1 +1,0 @@
-web: gunicorn ABASH_BACKEND.wsgi
