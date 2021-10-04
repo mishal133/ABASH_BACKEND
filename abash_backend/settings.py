@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-8do79mbkzd+qmqcry2d6ucesq4b=^*pkej(p+j3b2(66nyju!h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','abash133.herokuapp.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -45,12 +46,13 @@ INSTALLED_APPS = [
     'tags',
     'likes',
     
+    
 ]
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -61,8 +63,7 @@ MIDDLEWARE = [
 
 INTERNAL_IPS = [
     # ...
-    '127.0.0.1',
-    'abash133.herokuapp.com'
+    '127.0.0.1'
     # ...
 ]
 
@@ -138,7 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
@@ -157,3 +158,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+
+django_heroku.settings(locals())
