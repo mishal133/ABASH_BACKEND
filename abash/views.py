@@ -71,6 +71,15 @@ def add_property(request):
         else:
             return Response(serializer.errors)
 
+@api_view(['GET'])
+def get_property(request,arg):
+    if request.method == 'GET':
+        queryset= Property.objects.get(property_id=arg)
+        serializer = PropertySerializer(queryset)
+        return Response(serializer.data)
+
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_property_image(request):
@@ -81,6 +90,13 @@ def add_property_image(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+@api_view(['GET'])
+def get_property_images(request,arg):
+    if request.method == 'GET':
+        queryset= Property_Images.objects.filter(property_id=arg)
+        serializer = PropertyImagesSerializer(queryset,many = True)
+        return Response(serializer.data)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -360,4 +376,32 @@ def owners_added_propertys(request,user_id):
     if request.method == 'GET':
         queryset = Property.objects.filter(owner=user_id)
         serializer = PropertySerializer(queryset,many=True)
+        return Response(serializer.data)
+
+
+@api_view(['POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def add_delete_wishlist(request):
+    if request.method == 'POST':
+        serializer = WishlistSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+    if request.method == 'DELETE':
+        serializer = WishlistSerializer(data = request.data)
+        if serializer.is_valid():
+            Wishlist.objects.filter(user = serializer.data['user']).filter(property = serializer.data['property']).delete()
+            return Response({'response':'Wishlist Removed'})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_wishlist(request,user_id):
+    if request.method == 'GET':
+        queryset = Wishlist.objects.filter(user = user_id).values('property')
+        ids = [x['property'] for x in queryset]
+        wishlist_homes = Property.objects.filter(pk__in= ids)
+        serializer = PropertySerializer(wishlist_homes, many=True)
         return Response(serializer.data)

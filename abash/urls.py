@@ -10,7 +10,9 @@ urlpatterns =[
     path('login/', obtain_auth_token),
     path('logout/', logout_view),
     path('add_property/property', add_property),
+    path('get_property/<int:arg>', get_property),
     path('add_property/more_images', add_property_image),
+    path('get_property_images/<int:arg>', get_property_images),
     path('add_property/room', add_room),
     path('get_room/<int:arg>', get_room),
     path('add_property/location', add_location),
@@ -29,5 +31,8 @@ urlpatterns =[
     path('reject_requested_booking/<int:arg>',reject_requested_booking),
     path('current_home/<int:user_id>',user_current_home),
     path('added_propertys/<int:user_id>',owners_added_propertys),
+    path('add_wishlist/',add_delete_wishlist),
+    path('remove_wishlist/',add_delete_wishlist),
+    path('get_wishlist/<int:user_id>',get_wishlist)
 
 ]
