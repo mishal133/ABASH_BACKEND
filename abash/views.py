@@ -74,7 +74,7 @@ def add_property(request):
 @api_view(['GET'])
 def get_property(request,arg):
     if request.method == 'GET':
-        queryset= Property.objects.get(property_id=arg)
+        queryset= Property.objects.get(id=arg)
         serializer = PropertySerializer(queryset)
         return Response(serializer.data)
 
