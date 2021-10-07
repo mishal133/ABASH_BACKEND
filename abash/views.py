@@ -263,3 +263,101 @@ def location_search(request,search_topic):
         serializer = PropertySerializer(properties,many = True)
         return Response(serializer.data)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def request_booking(request):
+    if request.method == 'POST':
+        serializer = RequestedBookingSerializer(data=request.data)
+        if serializer.is_valid():
+            with transaction.atomic():
+                booking_instance = serializer.save()
+                owner_id = Property.objects.filter(pk = serializer.data['property']).values_list('owner',flat= True)
+                Received_Booking.objects.create(owner = owner_id,
+                                            property = booking_instance.property,
+                                            requested_user= booking_instance.user,
+                                            agreement_type = booking_instance.agreement_type,
+                                            start_date = booking_instance.start_date,
+                                            end_date = booking_instance.end_date
+                                            )
+                return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_get_booking(request,user_id):
+    if request.method == 'GET':
+        booking_requests = Requested_Booking.objects.filter(user=user_id)
+        serializer = RequestedBookingSerializer(booking_requests,many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def owner_get_booking(request,owner_id):
+    if request.method == 'GET':
+        booking_requests = Received_Booking.objects.filter(owner=owner_id)
+        serializer = ReceivedBookingSerializer(booking_requests,many=True)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def confirm_booking(request,arg):
+    if request.method == 'POST':
+        booking_requests = Received_Booking.objects.get(id = arg)
+        x= booking_requests.property
+        property_id_update= x.pk
+        req_user = booking_requests.requested_user
+        req__property =  booking_requests.property   
+        with transaction.atomic():
+            Rented_Property.objects.create(
+                property = booking_requests.property,
+                user = booking_requests.requested_user,
+                agreement_type = booking_requests.agreement_type,
+                start_date = booking_requests.start_date,
+                end_date = booking_requests.end_date
+            )
+            instance = Requested_Booking.objects.filter(user = req_user).filter(property = req__property)
+            instance.delete()
+            Property.objects.filter(id = property_id_update).update(rented = True)
+            Received_Booking.objects.get(id = arg).delete()
+            
+
+        return Response({'response':'Booking Confirmed'})
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def reject_received_booking(request,arg):
+    if request.method == 'DELETE':
+        booking_requests = Received_Booking.objects.get(id = arg)   
+        with transaction.atomic():
+            instance = Requested_Booking.objects.filter(user = booking_requests.requested_user).filter(property =booking_requests.property)
+            instance.delete()
+            Received_Booking.objects.get(id = arg).delete()
+        return Response({'response':'Booking Rejected'})
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def reject_requested_booking(request,arg):
+    if request.method == 'DELETE':
+        Requested_Booking.objects.get(id = arg).delete()
+        return Response({'response':'Booking Canceled'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_current_home(request,user_id):
+    if request.method == 'GET':
+        queryset = Rented_Property.objects.filter(user=user_id).values('property')
+        ids = [x['property'] for x in queryset]
+        current_homes = Property.objects.filter(pk__in= ids)
+        serializer = PropertySerializer(current_homes, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def owners_added_propertys(request,user_id):
+    if request.method == 'GET':
+        queryset = Property.objects.filter(owner=user_id)
+        serializer = PropertySerializer(queryset,many=True)
+        return Response(serializer.data)

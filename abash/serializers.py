@@ -71,10 +71,20 @@ class LocationSerializer(serializers.ModelSerializer):
         model= Location
         fields = ['property','flat','house','road','area','ward','upazila','district','division','latitude','longitude']
 
-class BookingSerializer(serializers.ModelSerializer):
+class RequestedBookingSerializer(serializers.ModelSerializer):
     class Meta:
-        model= Booking
-        fields = ['user','property','agreement_type','start_date','end_date']
+        model= Requested_Booking
+        fields = ['id','user','property','agreement_type','start_date','end_date','rejected']
+
+class ReceivedBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Received_Booking
+        fields = ['id','owner','property','requested_user','agreement_type','start_date','end_date']
+
+class WishlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wishlist
+        fields = ['user','property']
 
 class PropertyRatingSerializer(serializers.ModelSerializer):
     class Meta:

@@ -85,19 +85,55 @@ class Location(models.Model):
     def __str__(self):
         return str(self.property)
 
-class Booking(models.Model):
+class Requested_Booking(models.Model):
     AGREEMENT_CHOICES = [
         ('M','Monthly'),
         ('W','Weekly'),
         ('D','Daily')
     ]
-    user = models.ForeignKey(User_Details,on_delete=models.PROTECT)
-    property = models.ForeignKey(Property,on_delete=models.PROTECT)
+    user = models.ForeignKey(User_Details,on_delete=models.CASCADE)
+    property = models.ForeignKey(Property,on_delete=models.CASCADE)
     agreement_type = models.CharField(max_length=1,choices=AGREEMENT_CHOICES)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    rejected = models.BooleanField(null=True)
     def __str__(self):
-        return self.title
+        return str(self.user)
+class Received_Booking(models.Model):
+    AGREEMENT_CHOICES = [
+        ('M','Monthly'),
+        ('W','Weekly'),
+        ('D','Daily')
+    ]
+    owner = models.IntegerField()
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    requested_user = models.ForeignKey(User_Details,on_delete=models.CASCADE)
+    agreement_type = models.CharField(max_length=1,choices=AGREEMENT_CHOICES)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    def __str__(self):
+        return str(self.owner)
+
+class Rented_Property(models.Model):
+    AGREEMENT_CHOICES = [
+        ('M','Monthly'),
+        ('W','Weekly'),
+        ('D','Daily')
+    ]
+    property = models.OneToOneField(Property,on_delete=models.CASCADE, primary_key= True)
+    user = models.ForeignKey(User_Details,on_delete=models.CASCADE)
+    agreement_type = models.CharField(null = True,max_length=1,choices=AGREEMENT_CHOICES)
+    start_date = models.DateField(null = True)
+    end_date = models.DateField(null = True)
+
+    def __str__(self):
+        return str(self.property)
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User_Details,on_delete=models.CASCADE)
+    property = models.ForeignKey(Property,on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.user)
 
 class Property_rating(models.Model):
     user = models.ForeignKey(User_Details,on_delete=models.PROTECT)
@@ -105,7 +141,7 @@ class Property_rating(models.Model):
     rating = models.DecimalField(max_digits=2,decimal_places=1)
     review = models.TextField()
     def __str__(self):
-        return self.title
+        return str(self.property)
 
 class App_rating(models.Model):
     user = models.ForeignKey(User_Details,on_delete=models.PROTECT)

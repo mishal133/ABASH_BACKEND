@@ -20,6 +20,14 @@ urlpatterns =[
     path('property_rating/',property_rating),
     path('get_property_rating/',get_property_rating),
     path('property_filtering',filter_property),
-    path('property_search/<slug:search_topic>',location_search)
+    path('property_search/<slug:search_topic>',location_search),
+    path('request_booking/', request_booking),
+    path('user_booking/<int:user_id>',user_get_booking),
+    path('owner_booking/<int:owner_id>',owner_get_booking),
+    path('confirm_booking/<int:arg>',confirm_booking),
+    path('reject_received_booking/<int:arg>',reject_received_booking),
+    path('reject_requested_booking/<int:arg>',reject_requested_booking),
+    path('current_home/<int:user_id>',user_current_home),
+    path('added_propertys/<int:user_id>',owners_added_propertys),
 
 ]
